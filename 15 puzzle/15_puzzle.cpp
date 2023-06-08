@@ -192,8 +192,8 @@ int main() {
       break;
     }
   }
-  size_x -= size_x % square_size;
-  size_y -= size_y % square_size;
+  size_x = frame(square_count) * square_size;
+  size_y = (square_count / frame(square_count)) * square_size;
 
   Square squares[square_count];
 
