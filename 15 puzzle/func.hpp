@@ -1,7 +1,11 @@
 #include <iostream>
 #define MAX_SIZE 50
 
+/*
+Структура, представляющая собой квадрат (кусок) картинки
+*/
 struct Square {
+  // массив символов
   char data[MAX_SIZE][MAX_SIZE];
 };
 
