@@ -2,7 +2,7 @@
 #include <iostream>
 #include <string>
 #include <random>
-#include "func.h"
+#include "func.hpp"
 
 /*
 Функция загружает картинку в ASCII-графике из файла
@@ -12,10 +12,12 @@ const std::string &filename — имя входного файла
 char (&image)[512][512] — массив картинки
 int *x, int *y — размеры получившейся картинки
 
-Возвращается значение true, если файл успешно открылся, и данные считались.
+Возвращается значение true, если файл успешно открылся, 
+и данные считались.
 Значение false, если файл не открылся.
 */
-bool load_image(const std::string &filename, char (&image)[512][512], int *x, int *y) {
+bool load_image(const std::string &filename, 
+                char (&image)[512][512], int *x, int *y) {
   int rows = 0, min_columns = 100000, columns = 0;
   char pixel;
   std::string line;
@@ -26,7 +28,6 @@ bool load_image(const std::string &filename, char (&image)[512][512], int *x, in
   while (getline(file, line, '\n'))
   {
     columns = 0;
-    
     while (line[columns] != '\0')
     {
       image[rows][columns] = line[columns];
@@ -46,16 +47,18 @@ bool load_image(const std::string &filename, char (&image)[512][512], int *x, in
 
 Аргументы:
 char (&image)[512][512] — массив картинки
-Square *squares — 
+Square *squares — массив квадратов
 int sx, int sy — размеры картинки
 int square_count — количество квадратов
 int square_size — размер квадратов
 
-Возвращается значение true, если файл успешно открылся, и данные считались.
+Возвращается значение true, если файл успешно открылся, 
+и данные считались.
 Значение false, если файл не открылся.
 */
-// Разбить картинку на квадраты
-void divide_image(const char (&image)[512][512], Square *squares, int sx, int sy, int square_count, int square_size) {
+void divide_image(const char (&image)[512][512], 
+                  Square *squares, int sx, int sy, 
+                  int square_count, int square_size) {
   int count_in_row = sy / square_size;
   int count_in_column = sx / square_size;
 
@@ -68,12 +71,14 @@ void divide_image(const char (&image)[512][512], Square *squares, int sx, int sy
       {
         for (int w = 0; w < square_size; ++w) 
         {
-          square.data[h][w] = image[i * square_size + h][j * square_size + w];
+          square.data[h][w] = 
+            image[i * square_size + h][j * square_size + w];
         }
       }
     }
   }
 }
+
 
 /*
 Функция раскладывает число на максимально близкие 
@@ -93,7 +98,18 @@ int frame(int count) {
   return max;
 }
 
-void draw_squares(Square *squares, int rows, int columns, int square_size, int x, int y) {
+
+/*
+Функция выводит картинку в консоль
+
+Аргументы:
+Square *squares — массив квадратов
+int rows, int columns — количество строк и столбцов
+int square_size — размер квадратов
+int x, int y — координаты пустого квадрата
+*/
+void draw_squares(Square *squares, int rows, int columns, 
+                  int square_size, int x, int y) {
   char c;
 
   for (int i = 0; i < rows; i++) 
@@ -119,7 +135,20 @@ void draw_squares(Square *squares, int rows, int columns, int square_size, int x
   std::cout << std::endl;
 }
 
-int change(Square *squares, int square_count, int square_size, int a, int b) {
+/*
+Функция меняет два квадрата местами (посимвольно)
+
+Аргументы:
+Square *squares — массив квадратов
+int square_count — количество квадратов
+int square_size — размер квадратов
+int a, int b — индексы квадратов, которые нужно поменять местами
+
+Возвращает -1, если индексы выходят за пределы массива
+            0, если функция выполнилась корректно
+*/
+int change(Square *squares, int square_count, int square_size, 
+           int a, int b) {
   if (a >= square_count || b >= square_count)
     return -1;
   char c;
@@ -135,7 +164,23 @@ int change(Square *squares, int square_count, int square_size, int a, int b) {
   return 0;
 }
 
-int step(Square *squares, int rows, int columns, int square_size, int *x, int *y, int input)
+/*
+Функция меняет два соседних квадрата местами, в зависимости от
+введённого числа
+
+Аргументы:
+Square *squares — массив квадратов
+int rows, int columns — количество строк и столбцов
+int square_size — размер квадратов
+int *x, int *y — указатели на переменные для хранения координат 
+пустого квадрата
+int input — введённое число (0 — вниз, 1 — влево, 2 — вверх, 3 — вправо)
+
+Возвращает -1, если ход сделать не возможно
+            0, если функция выполнилась корректно
+*/
+int step(Square *squares, int rows, int columns, int square_size, 
+         int *x, int *y, int input)
 {
   switch (input) {
   case 0:
@@ -176,10 +221,24 @@ int step(Square *squares, int rows, int columns, int square_size, int *x, int *y
   return 0;
 }
 
+/*
+Функция запускает игру. Пользователь может вводить числа, 
+соответсвующие ходу, и двигать квадраты 
+(0 — вниз, 1 — влево, 2 — вверх, 3 — вправо)
 
-void game(Square *squares, int rows, int columns, int square_size, int *x, int *y)
+Аргументы:
+Square *squares — массив квадратов
+int rows, int columns — количество строк и столбцов
+int square_size — размер квадратов
+int *x, int *y — указатели на переменные для хранения координат 
+пустого квадрата
+*/
+void game(Square *squares, int rows, int columns, int square_size, 
+          int *x, int *y)
 {
   int input;
+  std::cout << "(0 — вниз, 1 — влево, 2 — вверх, 3 — вправо)" << 
+    std::endl << "Введите число от 0 до 3" << std::endl;
   std::cin >> input;
   while (input != -1)
   {
@@ -192,7 +251,16 @@ void game(Square *squares, int rows, int columns, int square_size, int *x, int *
   }
 }
 
+/*
+Функция перемешивает квадраты
 
+Аргументы:
+Square *squares — массив квадратов
+int rows, int columns — количество строк и столбцов
+int square_size — размер квадратов
+int *x, int *y — указатели на переменные для хранения координат 
+пустого квадрата
+*/
 void scrumble(Square *squares, int rows, int columns, int square_size,
                  int *x, int *y) {
   int rnd;
